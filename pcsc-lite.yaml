@@ -1,0 +1,94 @@
+Name        : pcsc-lite
+Version     : 1.8.11
+Release     : 1
+Group       : System/Libraries
+License     : BSD
+Summary     : PC/SC Lite smart card framework and applications
+Description : |
+  The purpose of PC/SC Lite is to provide a Windows(R) SCard interface
+  in a very small form factor for communicating to smartcards and
+  readers.  PC/SC Lite uses the same winscard API as used under
+  Windows(R).  This package includes the PC/SC Lite daemon, a resource
+  manager that coordinates communications with smart card readers and
+  smart cards that are connected to the system, as well as other command
+  line tools.
+URL         : http://pcsclite.alioth.debian.org/
+Sources     :
+    - https://alioth.debian.org/frs/download.php/file/%{upstream_build}/%{name}-%{version}.tar.bz2
+    - org.debian.pcsc-lite.policy
+Patches:
+    - pcscd-1.8.10-safer-udev-usage.patch
+Macros:
+    - upstream_build;3963
+RpmLintIgnore:
+    - file-contains-date-and-time
+SetupOptions: -q -n %{name}-1.8.10
+
+PkgBR:
+    - doxygen
+    - perl
+    - autoconf
+    - automake
+    - gettext-devel
+    - libtool
+PkgConfigBR:
+    - systemd
+    - polkit-agent-1
+    - polkit-backend-1
+    - polkit-gobject-1
+
+Requires:
+    - pcsc-ifd-handler
+
+RequiresPost:
+    - systemd
+RequiresPreUn:
+    - systemd
+RequiresPostUn:
+    - systemd
+
+Configure: configure
+ConfigOptions:
+    - --enable-polkit
+    - --enable-usbdropdir=%{_libdir}/pcsc/drivers
+Builder: make
+
+Files:
+    - "%doc AUTHORS ChangeLog DRIVERS HELP README SECURITY TODO"
+    - "%dir %{_sysconfdir}/reader.conf.d/"
+    - "%{_unitdir}/pcscd.service"
+    - "%{_unitdir}/pcscd.socket"
+    - "%{_sbindir}/pcscd"
+    - "%dir %{_libdir}/pcsc/"
+    - "%dir %{_libdir}/pcsc/drivers/"
+    - "%{_libdir}/libpcsclite.so.*"
+    - "%{_mandir}/man5/reader.conf.5*"
+    - "%{_mandir}/man8/pcscd.8*"
+    - "%{_datadir}/polkit-1/actions/org.debian.pcsc-lite.policy"
+    - "%ghost %dir %{_localstatedir}/run/pcscd/"
+
+SubPackages:
+    - Name: devel
+      Summary: PC/SC Lite development files
+      Group: Development/Libraries
+      Description: |
+        PC/SC Lite development files.
+      RequiresPost:
+          - /sbin/ldconfig
+      RequiresPostUn:
+          - /sbin/ldconfig
+      Files:
+          - "%{_bindir}/pcsc-spy"
+          - "%{_includedir}/PCSC/"
+          - "%{_libdir}/libpcsclite.so"
+          - "%{_libdir}/libpcscspy.so*"
+          - "%{_libdir}/pkgconfig/libpcsclite.pc"
+          - "%{_mandir}/man1/pcsc-spy.1*"
+    - Name: doc
+      Summary: PC/SC Lite development files
+      Group: Documentation
+      BuildArch: noarch
+      Description: |
+        PC/SC Lite developer documentation.
+      Files:
+          - "%doc doc/api/ doc/example/pcsc_demo.c"

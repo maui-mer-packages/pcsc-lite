@@ -1,0 +1,28 @@
+diff -ur pcsc-lite-1.8.10.orig/src/hotplug_libudev.c pcsc-lite-1.8.10/src/hotplug_libudev.c
+--- pcsc-lite-1.8.10.orig/src/hotplug_libudev.c	2013-10-06 12:25:18.000000000 +0200
++++ pcsc-lite-1.8.10/src/hotplug_libudev.c	2014-06-03 09:54:44.289011617 +0200
+@@ -541,6 +541,12 @@
+ 	fd_set fds;
+ 
+ 	udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
++	if (udev_monitor == NULL)
++	{
++		Log1(PCSC_LOG_ERROR, "udev_monitor_new_from_netlink() error\n");
++		return;
++	}
++	
+ 
+ 	/* filter only the interfaces */
+ 	r = udev_monitor_filter_add_match_subsystem_devtype(udev_monitor, "usb",
+@@ -560,6 +566,11 @@
+ 
+ 	/* udev monitor file descriptor */
+ 	fd = udev_monitor_get_fd(udev_monitor);
++	if (fd < 0)
++	{
++		Log2(PCSC_LOG_ERROR, "udev_monitor_get_fd() error: %d\n", fd);
++		return;
++	}
+ 
+ 	while (!AraKiriHotPlug)
+ 	{

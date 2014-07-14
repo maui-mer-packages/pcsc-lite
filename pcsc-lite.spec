@@ -123,6 +123,16 @@ rm -f $RPM_BUILD_ROOT%{_docdir}/pcsc-lite/README.DAEMON
 
 %postun -p /sbin/ldconfig
 
+%post devel
+# >> post devel
+/sbin/ldconfig
+# << post devel
+
+%postun devel
+# >> postun devel
+/sbin/ldconfig
+# << postun devel
+
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS ChangeLog DRIVERS HELP README SECURITY TODO
